@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="uk" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title>Мої нотатки</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body class="bg-light">
+<div class="container mt-5">
+  <h1 class="mb-4">Мої нотатки</h1>
+
+  <div class="card mb-4 shadow-sm">
+    <div class="card-body">
+      <form th:action="@{/note/create}" method="post" class="d-flex gap-3">
+        <input type="text" name="title" class="form-control" placeholder="Назва нотатки" required>
+        <input type="text" name="content" class="form-control" placeholder="Текст нотатки" required>
+        <button type="submit" class="btn btn-success">Додати</button>
+      </form>
+    </div>
+  </div>
+
+  <div class="row row-cols-1 row-cols-md-3 g-4">
+    <div class="col" th:each="note : ${notes}">
+      <div class="card h-100 shadow-sm border-0">
+        <div class="card-body">
+          <h5 class="card-title text-primary" th:text="${note.title}">Назва</h5>
+          <p class="card-text" th:text="${note.content}">Контент</p>
+        </div>
+        <div class="card-footer bg-transparent d-flex justify-content-between">
+          <a th:href="@{/note/edit(id=${note.id})}" class="btn btn-outline-primary btn-sm">Редагувати</a>
+          <form th:action="@{/note/delete}" method="post">
+            <input type="hidden" name="id" th:value="${note.id}">
+            <button type="submit" class="btn btn-outline-danger btn-sm">Видалити</button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+</body>
+</html>
