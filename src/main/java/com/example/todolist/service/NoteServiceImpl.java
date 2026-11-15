@@ -2,57 +2,47 @@ package com.example.todolist.service;
 
 import com.example.todolist.entity.Note;
 import com.example.todolist.exception.NoteNotFoundException;
+import com.example.todolist.repository.NoteRepository;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.Random;
 
 @Service
+@RequiredArgsConstructor
 public class NoteServiceImpl implements NoteService {
 
-    private final Map<Long, Note> notes = new HashMap<>();
-
-    private static final Random random = new Random();
+    private final NoteRepository noteRepository;
 
     @Override
     public List<Note> listAll() {
-        return new ArrayList<>(notes.values());
+        return noteRepository.findAll();
     }
 
     @Override
     public Note add(Note note) {
-        long id = Math.abs(random.nextLong());
-        note.setId(id);
-        notes.put(id, note);
-        return note;
+        return noteRepository.save(note);
     }
 
     @Override
     public void deleteById(long id) {
-        if (!notes.containsKey(id)) {
+        if (!noteRepository.existsById(id)) {
             throw new NoteNotFoundException(id);
         }
-        notes.remove(id);
+        noteRepository.deleteById(id);
     }
 
     @Override
     public void update(Note note) {
-        if (!notes.containsKey(note.getId())) {
+        if (!noteRepository.existsById(note.getId())) {
             throw new NoteNotFoundException(note.getId());
         }
-        Note existingNote = notes.get(note.getId());
-        existingNote.setTitle(note.getTitle());
-        existingNote.setContent(note.getContent());
+        noteRepository.save(note);
     }
 
     @Override
     public Note getById(long id) {
-        if (!notes.containsKey(id)) {
-            throw new NoteNotFoundException(id);
-        }
-        return notes.get(id);
+        return noteRepository.findById(id)
+                .orElseThrow(() -> new NoteNotFoundException(id));
     }
 }
